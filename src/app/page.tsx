@@ -68,6 +68,27 @@ export default function Home() {
     }
   }, []);
 
+  // PWA Service Worker Registration
+  useEffect(() => {
+    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+      const registerSW = async () => {
+        try {
+          const registration = await navigator.serviceWorker.register("/sw.js");
+          console.log("Service Worker registered with scope:", registration.scope);
+        } catch (err) {
+          console.error("Service Worker registration failed:", err);
+        }
+      };
+
+      if (document.readyState === "complete") {
+        registerSW();
+      } else {
+        window.addEventListener("load", registerSW);
+        return () => window.removeEventListener("load", registerSW);
+      }
+    }
+  }, []);
+
   // 3. Auto-detect location via IP on mount
   useEffect(() => {
     const detectLocation = async () => {
